@@ -1,19 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-
+import CharacterPage from './CharterPage';
+import Container from '@material-ui/core/Container';
 import { apiClient } from '../apiClient';
-import axios from 'axios'
 
 export default function HomePage(props) {
 
-    const [people, setPeople] = useState([])
+    const [people, setPeople] = useState([]);
+    const [character, setCharacter] = useState({})
 
     useEffect(() => {
 
         function getAllStarwarsPeople() {
             let people = [];
-            // first page
             return apiClient.get("/people")
                 .then(response => {
                     // collect people from first page
@@ -41,17 +41,27 @@ export default function HomePage(props) {
             const starwarsPeople = await getAllStarwarsPeople();
             setPeople(starwarsPeople)
         })();
-    }, [])
+    }, []);
+
+    const handleChange = (event, obj) => {
+        setCharacter(obj)
+    }
 
     return (
 
-        <Autocomplete
-            id="combo-box-demo"
-            options={people}
-            getOptionLabel={(option) => option.name}
-            style={{ width: 300 }}
-            renderInput={(params) => <TextField {...params} label="Character" variant="outlined" />}
-        />
+        <Container maxWidth="sm">
+            {Object.keys(character).length > 0 ? < CharacterPage {...character} setCharacter={setCharacter} /> :
+                <Autocomplete
+                    id="combo-box-demo"
+                    options={people}
+                    onChange={handleChange}
+                    getOptionLabel={(option) => option.name}
+                    style={{ width: 300 }}
+                    renderInput={(params) => <TextField {...params} label="Character" variant="outlined" />}
+                />
+            }
+        </Container>
+
     )
 
 }
